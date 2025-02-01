@@ -3,7 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accesso Photobooth</title>
+    <title>Accesso al Photobooth</title>
+    <script type="module">
+        // Importa Firebase SDK (modular)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Configurazione Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-8g89RJ9VD5myEFx8UqB9lVmPr_EdoIg",
+            authDomain: "photobooth-access-edf43.firebaseapp.com",
+            databaseURL: "https://photobooth-access-edf43-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "photobooth-access-edf43",
+            storageBucket: "photobooth-access-edf43.firebasestorage.app",
+            messagingSenderId: "377245088882",
+            appId: "1:377245088882:web:c699799fc482760fa516eb"
+        };
+
+        // Inizializza Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Ottieni un identificativo univoco del telefono
+        function getDeviceID() {
+            return navigator.userAgent + Math.random().toString(36).substring(7);
+        }
+
+        const deviceID = getDeviceID();
+        const accessButton = document.getElementById("accessButton");
+        const message = document.getElementById("message");
+
+        // Controlla se il telefono ha già scansionato
+        get(ref(db, "scansioni/" + deviceID)).then((snapshot) => {
+            if (snapshot.exists()) {
+                message.innerText = "Hai già scattato la tua foto!";
+                accessButton.innerText = "Accesso negato";
+                accessButton.classList.add("disabled");
+                accessButton.disabled = true;
+            } else {
+                accessButton.addEventListener("click", function() {
+                    // Salva il telefono nel database
+                    set(ref(db, "scansioni/" + deviceID), { usato: true });
+
+                    // Invia segnale di sblocco all'iPad
+                    set(ref(db, "ipad/sblocco"), true);
+                });
+            }
+        });
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,25 +90,8 @@
 <body>
     <div id="container">
         <h1>Accedi al Photobooth</h1>
-        <p id="message">Scansiona il QR Code per iniziare.</p>
-        <a id="accessButton" class="button">Avvia Photobooth</a>
+        <p id="message">Scansiona il QR Code per sbloccare il Photobooth.</p>
+        <button id="accessButton" class="button">Accedi</button>
     </div>
-
-    <script>
-        const accessKey = "photobooth_accessed"; // Chiave univoca per il controllo
-
-        // Controlla se il dispositivo ha già scansionato il QR Code
-        if (localStorage.getItem(accessKey)) {
-            document.getElementById("message").innerText = "Hai già scattato la tua foto!";
-            document.getElementById("accessButton").innerText = "Accesso negato";
-            document.getElementById("accessButton").classList.add("disabled");
-            document.getElementById("accessButton").removeAttribute("href");
-        } else {
-            document.getElementById("accessButton").href = "haloapp://open"; // Sostituisci con il link corretto per aprire Halo
-            document.getElementById("accessButton").addEventListener("click", function() {
-                localStorage.setItem(accessKey, "true"); // Segna il telefono come "già usato"
-            });
-        }
-    </script>
 </body>
 </html>
