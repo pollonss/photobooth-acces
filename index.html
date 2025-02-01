@@ -42,22 +42,24 @@
 </head>
 <body>
     <div id="container">
-        <h1>Accesso al Photobooth</h1>
-        <p id="message">Scansiona questo QR Code solo una volta per accedere.</p>
-        <a id="accessButton" class="button">Accedi al Photobooth</a>
+        <h1>Accedi al Photobooth</h1>
+        <p id="message">Scansiona il QR Code per iniziare.</p>
+        <a id="accessButton" class="button">Avvia Photobooth</a>
     </div>
 
     <script>
-        // Controllo se l'utente ha già usato il QR Code
-        if (localStorage.getItem("photoboothAccessed")) {
+        const accessKey = "photobooth_accessed"; // Chiave univoca per il controllo
+
+        // Controlla se il dispositivo ha già scansionato il QR Code
+        if (localStorage.getItem(accessKey)) {
             document.getElementById("message").innerText = "Hai già scattato la tua foto!";
             document.getElementById("accessButton").innerText = "Accesso negato";
             document.getElementById("accessButton").classList.add("disabled");
             document.getElementById("accessButton").removeAttribute("href");
         } else {
-            document.getElementById("accessButton").href = "haloapp://open"; // Qui va il link per aprire Halo
+            document.getElementById("accessButton").href = "haloapp://open"; // Sostituisci con il link corretto per aprire Halo
             document.getElementById("accessButton").addEventListener("click", function() {
-                localStorage.setItem("photoboothAccessed", "true");
+                localStorage.setItem(accessKey, "true"); // Segna il telefono come "già usato"
             });
         }
     </script>
