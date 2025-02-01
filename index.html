@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesso Photobooth</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            color: white;
+            background: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Accesso al Photobooth</h1>
+        <p id="message">Scansiona questo QR Code solo una volta per accedere.</p>
+        <a id="accessButton" class="button">Accedi al Photobooth</a>
+    </div>
+
+    <script>
+        // Controllo se l'utente ha già usato il QR Code
+        if (localStorage.getItem("photoboothAccessed")) {
+            document.getElementById("message").innerText = "Hai già scattato la tua foto!";
+            document.getElementById("accessButton").innerText = "Accesso negato";
+            document.getElementById("accessButton").classList.add("disabled");
+            document.getElementById("accessButton").removeAttribute("href");
+        } else {
+            document.getElementById("accessButton").href = "haloapp://open"; // Qui va il link per aprire Halo
+            document.getElementById("accessButton").addEventListener("click", function() {
+                localStorage.setItem("photoboothAccessed", "true");
+            });
+        }
+    </script>
+</body>
+</html>
